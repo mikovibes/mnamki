@@ -1,26 +1,77 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-healthy: var(--healthy);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: #FAF7F2;
+  --foreground: #1F252A;
+  --card: #FFFFFF;
+  --card-foreground: #1F252A;
+  --primary: #E8B4BC;
+  --primary-foreground: #1F252A;
+  --secondary: #FAF7F2;
+  --secondary-foreground: #1F252A;
+  --muted: #F3EFE8;
+  --muted-foreground: #6B7280;
+  --accent: #B5D8E8;
+  --accent-foreground: #1F252A;
+  --healthy: #A3C9A8;
+  --border: #EAE3D9;
+  --input: #EAE3D9;
+  --ring: #E8B4BC;
+  --radius: 1rem;
+}
+
+.dark {
+  --background: #1F252A;
+  --foreground: #FAF7F2;
+  --card: #2A3138;
+  --card-foreground: #FAF7F2;
+  --primary: #E8B4BC;
+  --primary-foreground: #1F252A;
+  --secondary: #2A3138;
+  --secondary-foreground: #FAF7F2;
+  --muted: #2A3138;
+  --muted-foreground: #9CA3AF;
+  --accent: #B5D8E8;
+  --accent-foreground: #1F252A;
+  --healthy: #A3C9A8;
+  --border: #3A434C;
+  --input: #3A434C;
+  --ring: #E8B4BC;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/20;
+  }
 }
