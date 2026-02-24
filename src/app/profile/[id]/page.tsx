@@ -2,7 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { ProfileClient } from "@/components/profile/profile-client";
 
-export default async function ProfilePage({ params }: { params: { id: string } }) {
+export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id: requestedUserId } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -10,7 +11,6 @@ export default async function ProfilePage({ params }: { params: { id: string } }
         redirect("/login");
     }
 
-    const requestedUserId = params.id;
     const isCurrentUser = user.id === requestedUserId;
 
     // Fetch Profile
