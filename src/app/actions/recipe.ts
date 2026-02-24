@@ -25,12 +25,24 @@ export async function saveRecipe(recipeData: any) {
         });
     }
 
+    // Determine image URL: Use provided image, or fallback to a category placeholder
+    let imageUrl = recipeData.image;
+    if (!imageUrl || imageUrl.includes("unsplash.com")) {
+        const primaryCategory = recipeData.tags?.[0];
+        if (primaryCategory) {
+            const formattedCategory = primaryCategory.toLowerCase().replace(/\s+/g, '_');
+            imageUrl = `/placeholders/${formattedCategory}.png`;
+        } else {
+            imageUrl = "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1000&auto=format&fit=crop";
+        }
+    }
+
     const { data, error } = await supabase
         .from("recipes")
         .insert({
             title: recipeData.title,
-            image_url: recipeData.image || "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1000&auto=format&fit=crop",
-            time: recipeData.time || 20, // add time col if needed (forgot in schema? wait, let's store in json or alter schema. Actually let's throw it in tags or add a column)
+            image_url: imageUrl,
+            time: recipeData.time || 20,
             ingredients: recipeData.ingredients || [],
             steps: recipeData.steps || [],
             ai_tags: recipeData.tags || [],

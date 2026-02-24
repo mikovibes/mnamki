@@ -11,6 +11,7 @@ import { updateRecipe } from "@/app/actions/recipe";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit2, Save, Trash2, Plus } from "lucide-react";
+import { RECIPE_CATEGORIES } from "@/components/recipe/recipe-grid";
 
 export function RecipeClient({ recipe, initialEntries, currentUser }: { recipe: any, initialEntries: any[], currentUser: any }) {
     const [cookingMode, setCookingMode] = useState(false);
@@ -195,11 +196,35 @@ export function RecipeClient({ recipe, initialEntries, currentUser }: { recipe: 
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mt-6">
-                    {recipe.tags?.map((tag: string) => (
-                        <span key={tag} className="px-3 py-1 bg-secondary rounded-full text-xs font-semibold text-secondary-foreground">
-                            {tag}
-                        </span>
-                    ))}
+                    {isEditing ? (
+                        RECIPE_CATEGORIES.map((cat: string) => {
+                            const isSelected = editData.tags?.includes(cat) || editData.categories?.includes(cat);
+                            return (
+                                <button
+                                    key={cat}
+                                    onClick={() => {
+                                        const currentTags = editData.tags || [];
+                                        const newTags = isSelected
+                                            ? currentTags.filter((t: string) => t !== cat)
+                                            : [...currentTags, cat];
+                                        setEditData({ ...editData, tags: newTags, categories: newTags });
+                                    }}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${isSelected
+                                        ? 'bg-primary border-primary text-primary-foreground shadow-sm'
+                                        : 'bg-card border-border text-muted-foreground hover:bg-muted/50'
+                                        }`}
+                                >
+                                    {cat}
+                                </button>
+                            );
+                        })
+                    ) : (
+                        (recipe.tags || recipe.categories || [])?.map((tag: string) => (
+                            <span key={tag} className="px-3 py-1 bg-secondary rounded-full text-xs font-semibold text-secondary-foreground">
+                                {tag}
+                            </span>
+                        ))
+                    )}
                 </div>
 
                 {/* Ingredients */}

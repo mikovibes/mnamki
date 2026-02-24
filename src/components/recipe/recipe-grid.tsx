@@ -4,9 +4,11 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 
+export const RECIPE_CATEGORIES = ["Healthy", "Fast", "High Protein", "Vegan", "Comfort Food", "Low Carb", "Spicy", "Quick Snack", "Dessert", "Breakfast"];
+
 export function RecipeGrid({ recipes }: { recipes: any[] }) {
     const [searchQuery, setSearchQuery] = useState("");
-    const [activeFilter, setActiveFilter] = useState("All");
+    const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
     const filters = ["All", "Healthy", "Fast", "High Protein", "Sweet", "Complex"];
 
@@ -22,19 +24,26 @@ export function RecipeGrid({ recipes }: { recipes: any[] }) {
             );
         }
 
-        // Apply tag filter
-        if (activeFilter !== "All") {
-            if (activeFilter === "Healthy") {
-                result = result.filter(r => r.health_score >= 8);
-            } else if (activeFilter === "Fast") {
-                result = result.filter(r => parseInt(r.time || "0") <= 30);
-            } else {
-                result = result.filter(r => r.tags && r.tags.some((tag: string) => tag.toLowerCase() === activeFilter.toLowerCase()));
-            }
+        // Apply multi-tag filter
+        if (activeFilters.length > 0) {
+            result = result.filter(r => {
+                // Return true if the recipe matches ALL selected activeFilters
+                return activeFilters.every(filter => {
+                    if (filter === "Healthy") return r.health_score >= 8;
+                    if (filter === "Fast") return parseInt(r.time || "0") <= 30;
+                    return r.tags && r.tags.some((tag: string) => tag.toLowerCase() === filter.toLowerCase());
+                });
+            });
         }
 
         return result;
-    }, [recipes, searchQuery, activeFilter]);
+    }, [recipes, searchQuery, activeFilters]);
+
+    const toggleFilter = (filter: string) => {
+        setActiveFilters(prev =>
+            prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
+        );
+    };
 
     return (
         <div className="space-y-6">
@@ -50,13 +59,13 @@ export function RecipeGrid({ recipes }: { recipes: any[] }) {
             </div>
 
             <div className="flex gap-2 overflow-x-auto pb-4 pt-1 snap-x hide-scrollbar -mx-6 px-6">
-                {filters.map(filter => (
+                {RECIPE_CATEGORIES.map(filter => (
                     <button
                         key={filter}
-                        onClick={() => setActiveFilter(filter)}
-                        className={`min-w-fit px-4 py-1.5 rounded-full text-sm font-bold transition-all shadow-sm snap-center ${activeFilter === filter
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-card border border-border text-muted-foreground hover:bg-muted/50'
+                        onClick={() => toggleFilter(filter)}
+                        className={`min-w-fit px-4 py-1.5 rounded-full text-sm font-bold transition-all shadow-sm snap-center ${activeFilters.includes(filter)
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-card border border-border text-muted-foreground hover:bg-muted/50'
                             }`}
                     >
                         {filter}
@@ -67,7 +76,7 @@ export function RecipeGrid({ recipes }: { recipes: any[] }) {
             <section>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-bold text-foreground">
-                        {searchQuery || activeFilter !== "All" ? "Search Results" : "Ready to cook"}
+                        {searchQuery || activeFilters.length > 0 ? "Search Results" : "Ready to cook"}
                     </h2>
                     <span className="text-sm text-muted-foreground font-medium">{filteredRecipes.length} recipes</span>
                 </div>
@@ -105,7 +114,7 @@ export function RecipeGrid({ recipes }: { recipes: any[] }) {
                     <div className="w-full py-12 flex flex-col items-center justify-center text-center border-2 border-dashed border-border rounded-2xl bg-muted/20">
                         <p className="text-muted-foreground font-medium">No recipes found.</p>
                         <button
-                            onClick={() => { setSearchQuery(""); setActiveFilter("All"); }}
+                            onClick={() => { setSearchQuery(""); setActiveFilters([]); }}
                             className="text-primary text-sm font-bold mt-2 hover:underline"
                         >
                             Clear filters

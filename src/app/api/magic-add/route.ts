@@ -43,7 +43,7 @@ Rules for extraction:
 3. ingredients: List of objects with { quantity (number/null), unit (string/null), name (string) }.
 4. steps: Ordered array of strings.
 5. health_score: Rate 1-10 based on whole foods, low ultra-processed, high veg/protein.
-6. categories: Array of categories (Fast, Cheap, Healthy, Complex, Sweet, Savory, etc). Return as 'categories', NOT 'tags'.`;
+6. tags: Array of EXACTLY 1 to 3 categories chosen strictly from this list: ["Healthy", "Fast", "High Protein", "Vegan", "Comfort Food", "Low Carb", "Spicy", "Quick Snack", "Dessert", "Breakfast"]. Do NOT invent tags outside this list.`;
 
         // 2. Format the message payload based on whether there's an image
         let userMessage: any = content || "Extract recipe from the attached image.";
